@@ -1,5 +1,6 @@
 import requests
 from api_client import get_post
+from unittest.mock import patch
 import pytest
 
 def test_get_valid_post(base_url):
@@ -25,4 +26,11 @@ def test_negative_id(base_url):
 
 def test_negative_id_raises_error(base_url):
     with pytest.raises(ValueError, match="Post ID must be a positive integer"):
-        get_post(-1, base_url)    
+        response = get_post(-1, base_url)     
+        assert response.status_code == 404
+
+def test_server_error(base_url):
+    with patch('api_client.requests.get') as mock_get:
+        mock_get.return_value.status_code = 500
+        with pytest.raises(ValueError, match="Service is unavailable"):
+            get_post(1, base_url)
