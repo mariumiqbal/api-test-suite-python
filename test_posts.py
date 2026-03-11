@@ -1,10 +1,9 @@
-import requests
 from api_client import get_post
 from unittest.mock import patch
 import pytest
 
 def test_get_valid_post(base_url):
-    response = requests.get(f"{base_url}/posts/1")
+    response = get_post(1, base_url)
     data = response.json()
     assert response.status_code == 200
     assert data["id"] == 1
@@ -17,11 +16,7 @@ def test_get_valid_post(base_url):
     assert isinstance(data["userId"], int)
 
 def test_get_invalid_post(base_url):
-    response = requests.get(f"{base_url}/posts/999")
-    assert response.status_code == 404
-
-def test_negative_id(base_url):
-    response = requests.get(f"{base_url}/posts/-1")
+    response = get_post(999, base_url)
     assert response.status_code == 404
 
 def test_negative_id_raises_error(base_url):
